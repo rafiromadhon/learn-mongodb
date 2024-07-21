@@ -568,3 +568,405 @@ db.customers.deleteMany({
     }
 })
 
+db.customers.bulkWrite([
+    {
+        insertOne: {
+            document: {
+                _id: "rafi",
+                full_name: "Rafi"
+            }
+        }
+    },
+    {
+        insertOne: {
+            document:{
+                _id: "nur",
+                full_name: "Nur"
+            }
+        }
+    },
+    {
+        updateMany:{
+            filter:{
+                _id:{
+                    $in: ['rafi', 'nur', 'romadhon']
+                }
+            },
+            update:{
+                $set: {
+                    full_name: "Rafi Nur Romadhon"
+                }
+            }
+        }
+    }
+])
+
+db.products.createIndex({
+    category: 1
+})
+
+db.products.dropIndex('category_1')
+
+db.products.find({
+    category: 'food'
+})
+
+db.products.find({
+    category: 'food'
+}).explain()
+
+db.products.find({
+    category: 'food'
+}).sort({
+    category: 1
+}).explain()
+
+db.products.find({
+    category: 'food'
+}).sort({
+    category: -1
+}).explain()
+
+db.products.find({
+    tags: 'samsung'
+}).explain()
+
+db.products.createIndex({
+    stock: 1,
+    tags:1
+})
+
+db.products.find({
+    stock: 10,
+    tags: 'popular'
+})
+
+db.products.find({
+    stock: 10,
+    tags: 'popular'
+}).explain()
+
+db.products.find({
+    stock: 10,
+}).explain()
+
+db.products.find({
+    tags: 'popular',
+}).explain()
+
+db.products.find({
+    name: "samsung",
+    tags: 'popular'
+}).explain()
+
+db.products.createIndex({
+    name: 'text',
+    category: 'text',
+    tags: 'text'
+}, {
+    weights:{
+        name:10,
+        category:5,
+        tags:1
+    }
+})
+
+db.products.find({
+    $text: {
+        $search: 'mie'
+    }
+})
+
+db.products.find({
+    $text: {
+        $search: 'mie laptop'
+    }
+})
+
+db.products.find({
+    $text: {
+        $search: '"mie sedaap"'
+    }
+})
+
+db.products.find({
+    $text: {
+        $search: 'mie -sedaap'
+    }
+})
+
+db.products.find({
+    $text: {
+        $search: 'mie -sedaap'
+    }
+}).explain()
+
+db.products.find({
+    $text:{
+        $search: 'mie laptop'
+    }
+},{
+    searchScore:{
+        $meta:"textScore"
+    }
+})
+
+db.products.find({
+    $text:{
+        $search: 'mie laptop'
+    }
+},{
+    searchScore:{
+        $meta:"textScore"
+    }
+}).sort({
+    searchScore: 1
+})
+
+db.customers.createIndex({
+    "customFields.$**": 1
+})
+
+db.customers.insertMany([
+    {
+        _id:"budi",
+        full_name:"Budi",
+        customFields:{
+            hobby: "Gaming",
+            university:"Universitas Esa Unggul"
+        }
+    },
+    {
+        _id:"rully",
+        full_name:"Rully",
+        customFields:{
+            ipk: 3.2,
+            university:"Universitas Esa Unggul"
+        }
+    },
+    {
+        _id:"rudi",
+        full_name:"Rudi",
+        customFields:{
+            motherName: "Tini",
+            passion:"Entrepreneur"
+        }
+    },
+])
+
+db.customers.find({
+    "customFields.passion" : "Entrepreneur"
+}).explain()
+
+db.customers.find({
+    "customFields.ipk" : 3.2
+}).explain()
+
+db.customers.find({
+    "customFields.hobby" : "Gaming"
+}).explain()
+
+db.createCollection('sessions')
+
+db.sessions.createIndex({
+    createdAt: 1
+},{
+    expireAfterSeconds: 10
+})
+
+db.sessions.insertOne({
+    _id:1,
+    session:"Session 1",
+    createdAt: new Date()
+})
+
+db.customers.createIndex({
+    email:1
+},{
+    unique: true,
+    sparse:true
+})
+
+db.customers.updateOne({
+    _id:"rafi"
+},{
+    $set:{
+        email:"rafi@example.com"
+    }
+})
+
+db.customers.updateOne({
+    _id:"joko"
+},{
+    $set:{
+        email:"rafi@example.com"
+    }
+})
+
+db.customers.find({
+    full_name:"Rafi Nur Romadhon"
+})
+
+db.customers.createIndex({
+    full_name:1
+},{
+    collation:{
+        locale: 'en',
+        strength: 2
+    }
+})
+
+db.customers.find({
+    full_name:"Rafi Nur Romadhon"
+}).collation({
+    locale: 'en',
+    strength: 2
+})
+
+db.products.createIndex({
+    price: 1
+},{
+    partialFilterExpression:{
+        stock:{
+            $gt:0
+        }
+    }
+})
+
+db.products.find({
+    price: 2500
+})
+
+db.products.find({
+    price: {
+        $eq:2500
+    },
+    stock:{
+        $gt:0
+    }
+})
+
+// use admin
+
+db.createUser({
+    user: 'mongo',
+    pwd: 'mongo',
+    roles:[
+        'userAdminAnyDatabase',
+        'readWriteAnyDatabase'
+    ]
+})
+
+"mongodb://mongo:mongo@localhost:27017/belajar?authSource=admin"
+
+"mongodb://salah:salah@localhost:27017/belajar?authSource=admin"
+
+db.createUser({
+    user: 'contoh2',
+    pwd: 'contoh',
+    roles:[
+        {
+            role: 'read',
+            db: 'test'
+        }
+    ]
+})
+
+db.createUser({
+    user: 'contoh2',
+    pwd: 'contoh2',
+    roles:[
+        {
+            role: 'readWrite',
+            db: 'test'
+        }
+    ]
+})
+
+"mongodb://contoh:rahasia@localhost:27017/belajar?authSource=admin"
+"mongodb://contoh2:contoh2@localhost:27017/belajar?authSource=admin"
+
+db.sample.insertOne({
+    _id:1,
+    name:"rafi"
+})
+
+db.changeUserPassword('contoh', 'rahasia')
+
+db.dropUser("contoh")
+
+db.updateUser("contoh2", {
+    roles:[
+        {
+            role: "readWrite",
+            db: "test"
+        },
+        {
+            role: "readWrite",
+            db: "belajar"
+        }
+    ]
+})
+
+db.createRole({
+    role:"session_management",
+    roles:[
+        {
+            role:'read',
+            db:'belajar'
+        }
+    ],
+    privileges:[
+        {
+            resource:{
+                db:'belajar',
+                collection:"sessions"
+            },
+            actions:['insert']
+        }
+    ]
+})
+
+db.getRoles({
+    showPrivileges: true
+})
+
+db.createUser({
+    user:'eko',
+    pwd:'eko',
+    roles:['session_management']
+})
+
+"mongodb://eko:eko@localhost:27017/belajar?authSource=admin"
+
+db.customers.insertOne({
+    _id: "contoh",
+    name: "Rafi Nur Romadhon"
+})
+
+db.sessions.insertOne({
+    _id: "test",
+    name: "test"
+})
+
+db.sessions.deleteOne({
+    _id: "test"
+})
+
+db.sessions.updateOne({
+    _id: "test" 
+},{
+    $set:{
+        name:"test lagi"
+    }
+})
+
+// "/d/doc/mongodb-database-tools-windows-x86_64-100.9.5/bin/mongodump.exe" --uri="mongodb://mongo:mongo@localhost:27017/belajar?authSource=admin" --out=backup-dump
+
+// "/d/doc/mongodb-database-tools-windows-x86_64-100.9.5/bin/mongoexport.exe" --uri="mongodb://mongo:mongo@localhost:27017/belajar?authSource=admin" --collection="customers" --out=customers.json
+
+// "/d/doc/mongodb-database-tools-windows-x86_64-100.9.5/bin/mongorestore.exe" --uri="mongodb://mongo:mongo@localhost:27017/belajar_restore?authSource=admin" --dir=backup-dump/belajar
+
+// "/d/doc/mongodb-database-tools-windows-x86_64-100.9.5/bin/mongoimport.exe" --uri="mongodb://mongo:mongo@localhost:27017/belajar_import?authSource=admin" --collection="customers" --file=customers.json
+
+
